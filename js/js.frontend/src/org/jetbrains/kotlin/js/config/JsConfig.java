@@ -203,6 +203,8 @@ public class JsConfig {
                 continue;
             }
 
+            HashSet<String> moduleNames = new HashSet<>();
+
             for (KotlinJavascriptMetadata metadata : metadataList) {
                 if (!metadata.getVersion().isCompatible() && !skipMetadataVersionCheck) {
                     report.error("File '" + path + "' was compiled with an incompatible version of Kotlin. " +
@@ -210,8 +212,13 @@ public class JsConfig {
                                  ", expected version is " + JsMetadataVersion.INSTANCE);
                     return true;
                 }
-                if (!modules.add(metadata.getModuleName())) {
-                    report.warning("Module \"" + metadata.getModuleName() + "\" is defined in more than one file");
+
+                moduleNames.add(metadata.getModuleName());
+            }
+
+            for (String moduleName : moduleNames) {
+                if (!modules.add(moduleName)) {
+                    report.warning("Module \"" + moduleName + "\" is defined in more than one file");
                 }
             }
 
